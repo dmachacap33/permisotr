@@ -93,6 +93,12 @@ export async function setupAuth(app: Express) {
       res.json({ message: "Logged out" });
     });
   });
+
+  app.get("/api/logout", (req, res) => {
+    req.logout(() => {
+      res.redirect("/login");
+    });
+  });
 }
 
 export const isAuthenticated: RequestHandler = (req, res, next) => {

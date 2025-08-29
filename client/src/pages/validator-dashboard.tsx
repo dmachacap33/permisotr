@@ -46,8 +46,11 @@ export default function ValidatorDashboard() {
 
   // Fetch permits pending validation
   const { data: permits, isLoading: permitsLoading } = useQuery<Permit[]>({
-    queryKey: ['/api/permits', { status: 'pending_validation' }],
-    enabled: isAuthenticated,
+    queryKey: [
+      '/api/permits',
+      `?status=pending_validation&validatedBy=${user?.id ?? ''}`,
+    ],
+    enabled: isAuthenticated && !!user,
   });
 
   // Validation mutation

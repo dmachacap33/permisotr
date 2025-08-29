@@ -10,7 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Form,
   FormControl,
   FormField,
@@ -31,6 +38,7 @@ import {
   Send
 } from "lucide-react";
 import { z } from "zod";
+import type { User } from "@shared/schema";
 
 interface PermitFormProps {
   permitType: string;
@@ -51,6 +59,8 @@ const formSchema = permitBasicInfoSchema.extend({
   photos: z.array(z.string()).optional(),
   specialInstructions: z.string().optional(),
   gasDetectionReading: z.string().optional(),
+  validatedBy: z.string().optional(),
+  approvedBy: z.string().optional(),
 });
 
 export default function PermitForm({
@@ -67,6 +77,7 @@ export default function PermitForm({
   const [showAPT, setShowAPT] = useState(false);
   const [photos, setPhotos] = useState<string[]>(initialData?.photos || []);
   const [aptData, setAptData] = useState(initialData?.aptAnalysis || null);
+  const [userOptions, setUserOptions] = useState<User[]>([]);
 
   const config = getPermitTypeConfig(permitType);
 
@@ -85,8 +96,25 @@ export default function PermitForm({
       ppeRequirements: initialData?.ppeRequirements || [],
       specialInstructions: initialData?.specialInstructions || '',
       gasDetectionReading: initialData?.gasDetectionReading || '',
+      validatedBy: initialData?.validatedBy || '',
+      approvedBy: initialData?.approvedBy || '',
     }
   });
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('/api/users', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setUserOptions(data);
+        }
+      } catch (e) {
+        console.error('Failed to load users', e);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const onSubmit = (data: any) => {
     const formData = {
@@ -106,8 +134,9 @@ export default function PermitForm({
       aptAnalysis: aptData,
       workDate: data.workDate.toISOString(),
     };
-    // Send for validation without specifying a validator (system will handle assignment)
-    onSubmitForValidation?.('', 'Enviado para validación');
+    // Save current data then send for validation to specific validator
+    onSave(formData, false);
+    onSubmitForValidation?.(data.validatedBy || '', 'Enviado para validación');
   };
 
   return (
@@ -286,15 +315,84 @@ export default function PermitForm({
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+          </CardContent>
+        </Card>
 
-          {/* Safety Checklist */}
-          <Card className="form-section" data-testid="card-safety-checklist">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-                <Shield className="text-green-600 mr-2 w-5 h-5" />
-                Lista de Verificación de Seguridad
+        {/* Responsible Persons */}
+        <Card className="form-section" data-testid="card-responsibles">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+              <UserCheck className="text-primary mr-2 w-5 h-5" />
+              Responsables
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="validatedBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Validador</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={readOnly}
+                    >
+                      <FormControl>
+                        <SelectTrigger data-testid="select-validator">
+                          <SelectValue placeholder="Selecciona validador" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {userOptions.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>
+                            {u.firstName ? `${u.firstName} ${u.lastName}` : u.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="approvedBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Supervisor</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={readOnly}
+                    >
+                      <FormControl>
+                        <SelectTrigger data-testid="select-supervisor">
+                          <SelectValue placeholder="Selecciona supervisor" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {userOptions.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>
+                            {u.firstName ? `${u.firstName} ${u.lastName}` : u.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Safety Checklist */}
+        <Card className="form-section" data-testid="card-safety-checklist">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+              <Shield className="text-green-600 mr-2 w-5 h-5" />
+              Lista de Verificación de Seguridad
               </h3>
               
               <div className="space-y-3">
