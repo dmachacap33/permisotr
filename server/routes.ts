@@ -5,7 +5,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./localStorage";
 // Autenticación local en lugar de Replit/Auth externa
 // import { setupAuth, isAuthenticated } from "./replitAuth";
-import { setupAuth, isAuthenticated } from "./localAuth";
+import { setupAuth, isAuthenticated, users } from "./localAuth";
 import { generatePermitPDF } from "./pdf-generator";
 import { insertPermitSchema, permitBasicInfoSchema } from "@shared/schema";
 import { z } from "zod";
@@ -22,6 +22,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Users listing for role assignment
+  app.get('/api/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const { role } = req.query;
+      let result = users;
+      if (role) {
+        result = result.filter((u) => u.role === role);
+      }
+      const sanitized = result.map(({ password, ...rest }) => rest);
+      res.json(sanitized);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 
@@ -61,10 +77,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/permits', isAuthenticated, async (req: any, res) => {
     try {
-      const { status, type } = req.query;
+      const { status, type, validatedBy, approvedBy } = req.query;
       const permits = await storage.getPermits({
         status: status as string,
         type: type as string,
+        validatedBy: validatedBy as string,
+        approvedBy: approvedBy as string,
       });
       res.json(permits);
     } catch (error) {

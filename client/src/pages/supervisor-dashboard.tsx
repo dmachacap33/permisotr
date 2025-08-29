@@ -48,14 +48,26 @@ export default function SupervisorDashboard() {
 
   // Fetch permits pending approval
   const { data: permits, isLoading: permitsLoading } = useQuery<Permit[]>({
-    queryKey: ['/api/permits', { status: 'pending_approval' }],
-    enabled: isAuthenticated && (user?.role === 'admin' || user?.role === 'supervisor'),
+    queryKey: [
+      '/api/permits',
+      `?status=pending_approval&approvedBy=${user?.id ?? ''}`,
+    ],
+    enabled:
+      isAuthenticated &&
+      (user?.role === 'admin' || user?.role === 'supervisor') &&
+      !!user,
   });
 
   // Fetch active permits for closure
   const { data: activePermits, isLoading: activePermitsLoading } = useQuery<Permit[]>({
-    queryKey: ['/api/permits', { status: 'approved' }],
-    enabled: isAuthenticated && (user?.role === 'admin' || user?.role === 'supervisor'),
+    queryKey: [
+      '/api/permits',
+      `?status=approved&approvedBy=${user?.id ?? ''}`,
+    ],
+    enabled:
+      isAuthenticated &&
+      (user?.role === 'admin' || user?.role === 'supervisor') &&
+      !!user,
   });
 
   // Approval mutation

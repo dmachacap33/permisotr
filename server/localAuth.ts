@@ -10,9 +10,19 @@ interface LocalUser {
   password: string;
   firstName?: string;
   lastName?: string;
+  role: 'admin' | 'supervisor' | 'user' | 'operator';
 }
 
-const users: LocalUser[] = [];
+const users: LocalUser[] = [
+  {
+    id: 'validator-supervisor',
+    email: 'x@example.com',
+    password: 'secret',
+    firstName: 'Validador',
+    lastName: 'Supervisor',
+    role: 'supervisor',
+  },
+];
 
 export async function setupAuth(app: Express) {
   app.use(
@@ -50,7 +60,7 @@ export async function setupAuth(app: Express) {
   });
 
   app.post("/api/register", (req, res) => {
-    const { email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName, role = 'user' } = req.body;
     if (users.some((u) => u.email === email)) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -60,6 +70,7 @@ export async function setupAuth(app: Express) {
       password,
       firstName,
       lastName,
+      role,
     };
     users.push(newUser);
     req.login(newUser, (err) => {
@@ -80,6 +91,12 @@ export async function setupAuth(app: Express) {
   app.post("/api/logout", (req, res) => {
     req.logout(() => {
       res.json({ message: "Logged out" });
+    });
+  });
+
+  app.get("/api/logout", (req, res) => {
+    req.logout(() => {
+      res.redirect("/login");
     });
   });
 }
