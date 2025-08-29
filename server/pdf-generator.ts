@@ -271,7 +271,7 @@ function generatePermitHTML(permit: Permit): string {
         </div>
     </div>
 
-    ${permit.ppeRequirements && permit.ppeRequirements.length > 0 ? `
+    ${permit.ppeRequirements && (permit.ppeRequirements as any[]).length > 0 ? `
     <div class="ppe-section">
         <h3>Equipo de Protección Personal Requerido</h3>
         <div class="ppe-grid">

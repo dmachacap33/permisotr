@@ -1,7 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+// Base de datos deshabilitada para pruebas locales
+// import { storage } from "./storage";
+import { storage } from "./localStorage";
+// Autenticación local en lugar de Replit/Auth externa
+// import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./localAuth";
 import { generatePermitPDF } from "./pdf-generator";
 import { insertPermitSchema, permitBasicInfoSchema } from "@shared/schema";
 import { z } from "zod";
@@ -13,9 +17,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      // En modo local simplemente devolvemos el usuario de la sesión
+      res.json(req.user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -25,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard routes
   app.get('/api/dashboard/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const stats = await storage.getDashboardStats(userId);
       res.json(stats);
     } catch (error) {
@@ -37,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Permit routes
   app.post('/api/permits', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertPermitSchema.parse({
         ...req.body,
         createdBy: userId,
@@ -89,7 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch('/api/permits/:id', isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const permit = await storage.updatePermit(id, req.body);
       
@@ -113,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { validatorId, comments } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       // Only update validatedBy if a specific validator is provided
       const updateData: any = {
@@ -145,7 +148,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { approved, comments } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const permit = await storage.updatePermit(id, {
         status: approved ? 'pending_approval' : 'rejected',
@@ -170,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { approved, comments } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const permit = await storage.updatePermit(id, {
         status: approved ? 'approved' : 'rejected',
@@ -197,10 +200,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { comments } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const permit = await storage.updatePermit(id, {
-        status: 'closed',
+        status: 'closed' as any,
         approvalComments: comments,
       });
       

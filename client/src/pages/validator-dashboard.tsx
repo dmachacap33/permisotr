@@ -38,7 +38,7 @@ export default function ValidatorDashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/login";
       }, 500);
       return;
     }
@@ -73,7 +73,7 @@ export default function ValidatorDashboard() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -185,7 +185,7 @@ export default function ValidatorDashboard() {
                   <div className="space-y-4">
                     {permits.map((permit) => {
                       const config = getPermitTypeConfig(permit.type);
-                      const IconComponent = config.icon;
+                  const IconComponent: any = config.icon;
                       
                       return (
                         <div 

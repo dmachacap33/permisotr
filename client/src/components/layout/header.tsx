@@ -148,7 +148,7 @@ export default function Header() {
                     <Avatar className="w-8 h-8">
                       <AvatarImage src={user?.profileImageUrl || undefined} />
                       <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
-                        {getInitials(user?.firstName, user?.lastName, user?.email)}
+                        {getInitials(user?.firstName || undefined, user?.lastName || undefined, user?.email || undefined)}
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-sm text-muted-foreground hidden sm:block">

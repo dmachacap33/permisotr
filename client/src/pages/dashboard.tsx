@@ -89,7 +89,7 @@ export default function Dashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/login";
       }, 500);
       return;
     }
@@ -302,16 +302,16 @@ export default function Dashboard() {
                               {config.title} - {permit.workDescription}
                             </h4>
                             <p className="text-sm text-muted-foreground" data-testid={`permit-location-${permit.id}`}>
-                              {permit.stationDuct} - {permit.areaSite} • {permit.permitNumber}
+                              {(permit.stationDuct || "")} - {(permit.areaSite || "")} • {permit.permitNumber}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Creado el {new Date(permit.createdAt).toLocaleDateString('es-ES')}
+                              Creado el {new Date(permit.createdAt || Date.now()).toLocaleDateString('es-ES')}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
                           <div data-testid={`permit-status-${permit.id}`}>
-                            {getStatusBadge(permit.status)}
+                            {getStatusBadge(permit.status || 'draft')}
                           </div>
                           <Button 
                             variant="ghost" 

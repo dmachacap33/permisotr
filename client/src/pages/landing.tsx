@@ -13,8 +13,8 @@ export default function Landing() {
               <HardHat className="text-primary text-2xl mr-3" />
               <h1 className="text-xl font-bold text-foreground">YPFB Permisos de Trabajo</h1>
             </div>
-            <Button 
-              onClick={() => window.location.href = "/api/login"}
+            <Button
+              onClick={() => window.location.href = "/login"}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
               data-testid="button-login"
             >
@@ -35,9 +35,9 @@ export default function Landing() {
               Gestiona de forma segura y eficiente todos los permisos de trabajo industrial. 
               Sistema integral para excavación, trabajos en caliente y en frío con análisis de riesgos completo.
             </p>
-            <Button 
+            <Button
               size="lg"
-              onClick={() => window.location.href = "/api/login"}
+              onClick={() => window.location.href = "/login"}
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-4 text-lg"
               data-testid="button-get-started"
             >

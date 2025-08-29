@@ -81,7 +81,7 @@ export default function SupervisorDashboard() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -272,7 +272,7 @@ export default function SupervisorDashboard() {
                   <div className="space-y-4">
                     {permits.map((permit) => {
                       const config = getPermitTypeConfig(permit.type);
-                      const IconComponent = config.icon;
+                      const IconComponent: any = config.icon;
                       
                       return (
                         <div 
@@ -372,7 +372,7 @@ export default function SupervisorDashboard() {
                   <div className="space-y-4">
                     {activePermits.map((permit) => {
                       const config = getPermitTypeConfig(permit.type);
-                      const IconComponent = config.icon;
+                      const IconComponent: any = config.icon;
                       
                       return (
                         <div 

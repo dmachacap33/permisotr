@@ -31,7 +31,7 @@ export default function PermitDetails() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/login";
       }, 500);
       return;
     }
@@ -66,7 +66,7 @@ export default function PermitDetails() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -99,7 +99,7 @@ export default function PermitDetails() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -214,7 +214,7 @@ export default function PermitDetails() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                {getStatusBadge(permit.status)}
+                {getStatusBadge(permit.status || 'draft')}
                 <span className="text-sm text-muted-foreground" data-testid="text-permit-number">
                   {permit.permitNumber}
                 </span>
