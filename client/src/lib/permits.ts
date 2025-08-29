@@ -1,7 +1,7 @@
 export interface PermitType {
   title: string;
   subtitle: string;
-  icon: string;
+  icon: any;
   color: string;
   checklist: string[];
   ppe: string[];
