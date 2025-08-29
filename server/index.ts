@@ -47,20 +47,26 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
+
+  // --- ATTEMPT TO LOG THE PREVIEW URL ---
+  if (process.env.GITPOD_WORKSPACE_URL) {
+    console.log(`Preview URL: https://${port}-${process.env.GITPOD_WORKSPACE_URL.substring(8)}`);
+  }
+  if (process.env.CODESPACE_NAME) {
+    console.log(`Preview URL: https://${process.env.CODESPACE_NAME}-${port}.preview.app.github.dev`);
+  }
+  if (process.env.REPL_SLUG) {
+    console.log(`Preview URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+  }
+  // --- END ATTEMPT ---
+
   server.listen({
     port,
     host: "0.0.0.0",
