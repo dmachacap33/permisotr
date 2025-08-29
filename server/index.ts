@@ -53,20 +53,12 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
+  // --- DUMPING ENVIRONMENT VARIABLES TO FIND URL ---
+  console.log("--- Searching for Preview URL in Environment Variables ---");
+  console.log(process.env);
+  console.log("----------------------------------------------------------");
+
   const port = parseInt(process.env.PORT || '5000', 10);
-
-  // --- ATTEMPT TO LOG THE PREVIEW URL ---
-  if (process.env.GITPOD_WORKSPACE_URL) {
-    console.log(`Preview URL: https://${port}-${process.env.GITPOD_WORKSPACE_URL.substring(8)}`);
-  }
-  if (process.env.CODESPACE_NAME) {
-    console.log(`Preview URL: https://${process.env.CODESPACE_NAME}-${port}.preview.app.github.dev`);
-  }
-  if (process.env.REPL_SLUG) {
-    console.log(`Preview URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
-  }
-  // --- END ATTEMPT ---
-
   server.listen({
     port,
     host: "0.0.0.0",
