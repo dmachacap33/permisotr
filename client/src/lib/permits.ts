@@ -7,6 +7,26 @@ export interface PermitType {
   ppe: string[];
 }
 
+export const generalChecklist: string[] = [
+  '¿Existe el análisis de riesgos y el procedimiento específico para el trabajo a ser realizado?',
+  '¿El área de trabajo está delimitada, señalizada y libre de obstrucciones (especialmente para vehículos y peatones donde aplique)?',
+  '¿Las válvulas han sido correctamente cerradas, señalizadas, etiquetadas y con candado para aislar el sistema?',
+  '¿Ha sido bloqueado, etiquetado y se ha probado el arranque del circuito eléctrico correcto?',
+  '¿El equipo eléctrico a ser usado dispone de aterramiento?',
+  '¿Las herramientas manuales y automáticas fueron revisadas y verificadas previo al uso?',
+  '¿Los equipos especializados (grúas, tecles, fajas, cadenas, aparejos, inspección, etc.) fueron verificados previamente?',
+  '¿El sistema (equipo, recipiente, ducto) ha sido despresurizado, drenado y venteado?',
+  '¿El sistema (equipo, recipiente, ducto) ha sido lavado a vapor o con agua (detergente)?',
+  '¿El sistema (equipo, recipiente, ducto) ha sido purgado inertizado con nitrógeno?',
+  '¿Está el sistema (equipo, recipiente, ducto) limpio y libre de material inflamable?',
+  '¿Han sido reconocidas y tapadas las alcantarillas, excavaciones, drenajes, etc.?',
+  '¿Se ha reducido la presión del sistema (equipo, recipiente, ducto) a intervenir?',
+  '¿Se identificó el producto en el sistema (equipo, recipiente, ducto) a reparar?',
+  '¿Se verificó que todos los sistemas sensibles han sido inhibidos o desconectados?',
+  '¿Se realizó medición de espesores (soldadura, arenado)?',
+  '¿El equipo de suministro de aire para arenador dispone de filtro de respiración aprobado?',
+];
+
 export const permitTypes: Record<string, PermitType> = {
   excavation: {
     title: 'Permiso de Trabajo para Excavación',
@@ -144,5 +164,9 @@ export const permitTypes: Record<string, PermitType> = {
 };
 
 export const getPermitTypeConfig = (type: string) => {
-  return permitTypes[type] || permitTypes.excavation;
+  const permit = permitTypes[type] || permitTypes.excavation;
+  return {
+    ...permit,
+    checklist: Array.from(new Set([...generalChecklist, ...permit.checklist])),
+  };
 };
